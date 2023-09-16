@@ -1,0 +1,42 @@
+name: Python CI
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Select Environment'
+        required: true
+        options:
+          - 'Production'
+          - 'Staging'
+          - 'Development'
+      type:
+        description: 'Select Type'
+        required: true
+        default: 'dashboard'
+        options:
+          - 'dashboard'
+          - 'visualization'
+          - 'both'
+      # For the output file, GitHub Actions does not support file selection, so you can pass the file path as a text input.
+      output_file:
+        description: 'Output File Path'
+        required: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.x  # Specify the desired Python version
+
+    - name: Install dependencies
+      run: pip install -r requirements.txt  # Create requirements.txt with argparse and other dependencies
+
+    - name: Run Python script
+      run: python your_script.py ${{ github.event.inputs.environment }} ${{ github.event.inputs.type }} ${{ github.event.inputs.output_file }}
